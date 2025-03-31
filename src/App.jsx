@@ -1,34 +1,40 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react'
+import Weather from './Weather'
+import SearchWeather from './SearchWeather'
+import Forecast from './Forecast'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [favorites, setFavorites] = useState(
+    JSON.parse(localStorage.getItem('favorites')) || []
+  )
+
+  const addFavorite = (city) => {
+    if (!favorites.includes(city)) {
+      const updated = [...favorites, city]
+      setFavorites(updated)
+      localStorage.setItem('favorites', JSON.stringify(updated))
+    }
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <h1>Väderapplikation</h1>
+
+      {/* Väder för nuvarande plats */}
+      <Weather />
+
+      {/* Sökfunktion */}
+      <SearchWeather onAddFavorite={addFavorite} />
+
+      {/* Favoritplatser med 5-dagarsprognos */}
+      <h2>Favoritplatser</h2>
+      {favorites.map((city) => (
+        <div key={city}>
+          <p>{city}</p>
+          <Forecast city={city} />
+        </div>
+      ))}
+    </div>
   )
 }
 
